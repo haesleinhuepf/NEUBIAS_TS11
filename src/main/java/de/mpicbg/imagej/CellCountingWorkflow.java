@@ -10,18 +10,22 @@ package de.mpicbg.imagej;
 
 import net.imagej.Dataset;
 import net.imagej.ImageJ;
+import net.imagej.mesh.Mesh;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.labeling.ConnectedComponents;
 import net.imglib2.img.Img;
+import net.imglib2.roi.Regions;
 import net.imglib2.roi.labeling.ImgLabeling;
 import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.roi.labeling.LabelRegions;
 import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.IntegerType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.view.Views;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
@@ -72,9 +76,19 @@ public class CellCountingWorkflow<T extends RealType<T>> implements Command {
         int numberOfObjects = regions.getExistingLabels().size();
         System.out.print("Object found: " + numberOfObjects);
 
+        int count = 0;
+        for (LabelRegion region : regions) {
 
 
+            IterableInterval sample = Regions.sample(region, image);
+            RealType mean = ij.op().stats().mean(sample);
 
+            System.out.println("Region " + count);
+            System.out.println(" size " + region.size());
+            System.out.println(" mean intensity" + mean.getRealFloat());
+
+            count ++;
+        }
     }
 
     private void invertBinaryImage(IterableInterval image) {
