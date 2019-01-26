@@ -11,9 +11,11 @@ package de.mpicbg.imagej;
 import net.imagej.Dataset;
 import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
+import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.view.Views;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -32,11 +34,23 @@ public class CellCountingWorkflow<T extends RealType<T>> implements Command {
     @Parameter
     private Dataset currentData;
 
+    @Parameter
+    ImageJ ij;
+
     @Override
     public void run() {
         final Img<T> image = (Img<T>)currentData.getImgPlus();
 
-        System.out.println("Hello world!");
+        // blur a bit to remove noise
+        RandomAccessibleInterval gaussBlurred = ij.op().filter().gauss(image, 2, 2);
+
+        // apply threshold
+        IterableInterval otsuThresholed = ij.op().threshold().otsu(Views.iterable(gaussBlurred));
+
+        // show result
+        ij.ui().show(otsuThresholed);
+
+
     }
 
     /**
@@ -53,7 +67,8 @@ public class CellCountingWorkflow<T extends RealType<T>> implements Command {
         ij.ui().showUI();
 
         // ask the user for a file to open
-        final File file = ij.ui().chooseFile(null, "open");
+        final File file = new File("src/main/resources/blobs.tif");
+                //ij.ui().chooseFile(null, "open");
 
         if (file != null) {
             // load the dataset
