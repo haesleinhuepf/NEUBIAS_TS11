@@ -8,6 +8,7 @@
 
 package de.mpicbg.imagej;
 
+import bdv.util.BdvFunctions;
 import net.imagej.Dataset;
 import net.imagej.ImageJ;
 import net.imagej.mesh.Mesh;
@@ -17,6 +18,7 @@ import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.labeling.ConnectedComponents;
 import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.roi.Regions;
 import net.imglib2.roi.labeling.ImgLabeling;
 import net.imglib2.roi.labeling.LabelRegion;
@@ -32,6 +34,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 import java.io.File;
+import java.util.Random;
 
 /**
  *
@@ -71,6 +74,11 @@ public class CellCountingWorkflow<T extends RealType<T>> implements Command {
         RandomAccessibleInterval otsuThresholedRai = ij.op().convert().int32(otsuThresholed);
         ImgLabeling cca = ij.op().labeling().cca(otsuThresholedRai, ConnectedComponents.StructuringElement.FOUR_CONNECTED);
 
+        // create a result image to show object segmentation
+        Img<ARGBType> result = ArrayImgs.argbs(new long[]{image.dimension(0), image.dimension(1)});
+        Random random = new Random();
+
+
         // get a list of regions
         LabelRegions<IntegerType> regions = new LabelRegions(cca);
 
@@ -92,14 +100,20 @@ public class CellCountingWorkflow<T extends RealType<T>> implements Command {
             System.out.println(" size " + region.size());
             System.out.println(" mean intensity" + mean.getRealFloat());
 
+            ARGBType colour = new ARGBType(random.nextInt());
 
-
-
-
-
+            IterableInterval<ARGBType> resultRegionIterable = Regions.sample(region, result);
+            Cursor<ARGBType> cursor = resultRegionIterable.cursor();
+            while (cursor.hasNext()) {
+                cursor.next().set(colour);
+            }
 
             count ++;
         }
+
+
+        BdvFunctions.show(result, "Labelling");
+
     }
 
     private void invertBinaryImage(IterableInterval image) {
