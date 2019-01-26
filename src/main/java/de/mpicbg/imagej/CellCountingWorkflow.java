@@ -10,20 +10,19 @@ package de.mpicbg.imagej;
 
 import net.imagej.Dataset;
 import net.imagej.ImageJ;
-import net.imagej.ops.OpService;
+import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
+import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
+import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.ui.UIService;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -47,11 +46,49 @@ public class CellCountingWorkflow<T extends RealType<T>> implements Command {
         // apply threshold
         IterableInterval otsuThresholed = ij.op().threshold().otsu(Views.iterable(gaussBlurred));
 
+
+        // show intermediate result
+        ij.ui().show(otsuThresholed);
+
+        invertBinaryImage(otsuThresholed);
+        //invertBinaryImage2D((RandomAccessibleInterval)otsuThresholed);
+
         // show result
         ij.ui().show(otsuThresholed);
 
 
     }
+
+    private void invertBinaryImage(IterableInterval image) {
+
+        // Inverting an image is a method which needs to be done for all pixels.
+        // We can iterate through all pixels like this
+        Cursor cursor = image.cursor();
+        while (cursor.hasNext()) {
+            BitType pixel = (BitType) cursor.next();
+            pixel.set(!pixel.get());
+        }
+
+    }
+
+    private void invertBinaryImage2D(RandomAccessibleInterval image) {
+
+        RandomAccess ra = image.randomAccess();
+        long[] position = new long[2];
+
+        for (int x = 0; x < image.dimension(0); x++) {
+            for (int y = 0; y < image.dimension(1); y++) {
+                position[0] = x;
+                position[1] = y;
+
+                ra.setPosition(position);
+
+                BitType pixel = (BitType) ra.get();
+                pixel.set(!pixel.get());
+            }
+        }
+    }
+
 
     /**
      * This main function serves for development purposes.
