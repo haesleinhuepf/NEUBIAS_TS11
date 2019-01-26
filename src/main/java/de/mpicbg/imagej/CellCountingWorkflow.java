@@ -9,6 +9,8 @@
 package de.mpicbg.imagej;
 
 import bdv.util.BdvFunctions;
+import net.haesleinhuepf.clij.CLIJ;
+import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
 import net.imagej.Dataset;
 import net.imagej.ImageJ;
 import net.imagej.mesh.Mesh;
@@ -27,6 +29,7 @@ import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.IntegerType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.view.Views;
 import org.scijava.command.Command;
@@ -56,11 +59,24 @@ public class CellCountingWorkflow<T extends RealType<T>> implements Command {
     public void run() {
         final Img<T> image = (Img<T>)currentData.getImgPlus();
 
-        // blur a bit to remove noise
-        RandomAccessibleInterval gaussBlurred = ij.op().filter().gauss(image, 2, 2);
+        CLIJ clij = CLIJ.getInstance();
 
-        // apply threshold
-        IterableInterval otsuThresholed = ij.op().threshold().otsu(Views.iterable(gaussBlurred));
+        // convert / send image to the GPU
+        ClearCLBuffer input = clij.convert(image, ClearCLBuffer.class);
+
+        // create memory on GPU to store intermediate results and output
+        ClearCLBuffer gaussBlurredOnGPU = clij.create(input);
+        ClearCLBuffer otsuThresholdedOnGPU = clij.create(input);
+
+        // blur on GPU
+        clij.op().blurFast(input, gaussBlurredOnGPU, 2f,2f, 0f);
+
+        // threshold on GPU
+        clij.op().automaticThreshold(gaussBlurredOnGPU, otsuThresholdedOnGPU, "Otsu");
+
+        // unfortunately, we need to convert a byte image on GPU to a bit-image on CPU, this works by thresholding
+        IterableInterval otsuResultFromGPU = Views.iterable(clij.convert(otsuThresholdedOnGPU, RandomAccessibleInterval.class));
+        IterableInterval otsuThresholed = ij.op().threshold().apply(otsuResultFromGPU, new UnsignedByteType(0));
 
 
         // show intermediate result
