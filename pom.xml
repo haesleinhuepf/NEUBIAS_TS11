@@ -8,21 +8,21 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>22.3.0</version>
+		<version>24.2.0</version>
 		<relativePath />
 	</parent>
 
-	<groupId>com.mycompany</groupId>
-	<artifactId>GaussFiltering</artifactId>
+	<groupId>de.mpicbg</groupId>
+	<artifactId>CellCountingWorkflow</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 
-	<name>Gauss Filtering</name>
-	<description>A Maven project implementing an ImageJ command.</description>
-	<url>http://mycompany.com/imagej/gauss-filtering/</url>
-	<inceptionYear>2017</inceptionYear>
+	<name>Cell counting workflow</name>
+	<description>A Maven project implementing an ImageJ command for counting cells.</description>
+	<url>http://myerslab.mpi-cbg.de/robert-haase</url>
+	<inceptionYear>2019</inceptionYear>
 	<organization>
-		<name>My Company</name>
-		<url>http://mycompany.com/</url>
+		<name>MPI-CBG</name>
+		<url>http://www.mpi-cbg.de/</url>
 	</organization>
 	<licenses>
 		<license>
@@ -32,11 +32,10 @@
 	</licenses>
 
 	<developers>
-		<!-- See https://imagej.net/Team -->
 		<developer>
-			<id>ctrueden</id>
-			<name>Curtis Rueden</name>
-			<url>http://imagej.net/User:Rueden</url>
+			<id>haesleinhuepf</id>
+			<name>Robert Haase</name>
+			<url>http://haesleinhuepf.net</url>
 			<roles>
 				<role>founder</role>
 				<role>lead</role>
@@ -50,10 +49,7 @@
 	</developers>
 	<contributors>
 		<contributor>
-			<name>Yili Zhao</name>
-			<url>http://imagej.net/User:Panovr</url>
-			<roles><role>founder</role></roles>
-			<properties><id>panovr</id></properties>
+			<name>none</name>
 		</contributor>
 	</contributors>
 
@@ -65,24 +61,25 @@
 	</mailingLists>
 
 	<scm>
-		<connection>scm:git:git://github.com/imagej/example-imagej-command</connection>
-		<developerConnection>scm:git:git@github.com:imagej/example-imagej-command</developerConnection>
+		<connection>scm:git:git://github.com/haesleinhuepf/NEUBIAS_TS11</connection>
+		<developerConnection>scm:git:git@github.com:haesleinhuepf/NEUBIAS_TS11</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/imagej/example-imagej-command</url>
+		<url>https://github.com/haesleinhuepf/NEUBIAS_TS11</url>
 	</scm>
 	<issueManagement>
 		<system>GitHub Issues</system>
-		<url>https://github.com/imagej/example-imagej-command/issues</url>
+		<url>https://github.com/haesleinhuepf/NEUBIAS_TS11/issues</url>
 	</issueManagement>
 	<ciManagement>
 		<system>None</system>
 	</ciManagement>
 
 	<properties>
-		<package-name>com.mycompany.imagej</package-name>
-		<main-class>com.mycompany.imagej.GaussFiltering</main-class>
-		<license.licenseName>bsd_2</license.licenseName>
-		<license.copyrightOwners>My Company, Inc.</license.copyrightOwners>
+		<package-name>de.mpicbg</package-name>
+		<main-class>de.mpicbg.imagej.GaussFiltering</main-class>
+		<license.licenseName>bsd_3</license.licenseName>
+		<license.copyrightOwners>Robert Haase</license.copyrightOwners>
+		<imagej.app.directory>C:/programs/fiji-win64/Fiji.app/</imagej.app.directory>
 	</properties>
 
 	<repositories>
