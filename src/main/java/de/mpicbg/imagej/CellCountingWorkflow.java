@@ -35,7 +35,8 @@ public class CellCountingWorkflow<T extends RealType<T>> implements Command {
     @Override
     public void run() {
         final Img<T> image = (Img<T>)currentData.getImgPlus();
-        
+
+        System.out.println("Hello world!");
     }
 
     /**
@@ -67,3 +68,41 @@ public class CellCountingWorkflow<T extends RealType<T>> implements Command {
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
