@@ -76,7 +76,7 @@
 
 	<properties>
 		<package-name>de.mpicbg</package-name>
-		<main-class>de.mpicbg.imagej.GaussFiltering</main-class>
+		<main-class>de.mpicbg.imagej.CellCountingWorkflow</main-class>
 		<license.licenseName>bsd_3</license.licenseName>
 		<license.copyrightOwners>Robert Haase</license.copyrightOwners>
 		<imagej.app.directory>C:/programs/fiji-win64/Fiji.app/</imagej.app.directory>

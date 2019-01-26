@@ -6,7 +6,7 @@
  *     http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package com.mycompany.imagej;
+package de.mpicbg.imagej;
 
 import net.imagej.Dataset;
 import net.imagej.ImageJ;
@@ -24,50 +24,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This example illustrates how to create an ImageJ {@link Command} plugin.
- * <p>
- * The code here is a simple Gaussian blur using ImageJ Ops.
- * </p>
- * <p>
- * You should replace the parameter fields with your own inputs and outputs,
- * and replace the {@link run} method implementation with your own logic.
- * </p>
+ *
  */
 @Plugin(type = Command.class, menuPath = "Plugins>Gauss Filtering")
-public class GaussFiltering<T extends RealType<T>> implements Command {
-    //
-    // Feel free to add more parameters here...
-    //
+public class CellCountingWorkflow<T extends RealType<T>> implements Command {
 
     @Parameter
     private Dataset currentData;
 
-    @Parameter
-    private UIService uiService;
-
-    @Parameter
-    private OpService opService;
-
     @Override
     public void run() {
         final Img<T> image = (Img<T>)currentData.getImgPlus();
-
-        //
-        // Enter image processing code here ...
-        // The following is just a Gauss filtering example
-        //
-        final double[] sigmas = {1.0, 3.0, 5.0};
-
-        List<RandomAccessibleInterval<T>> results = new ArrayList<>();
-
-        for (double sigma : sigmas) {
-            results.add(opService.filter().gauss(image, sigma));
-        }
-
-        // display result
-        for (RandomAccessibleInterval<T> elem : results) {
-            uiService.show(elem);
-        }
+        
     }
 
     /**
@@ -94,7 +62,7 @@ public class GaussFiltering<T extends RealType<T>> implements Command {
             ij.ui().show(dataset);
 
             // invoke the plugin
-            ij.command().run(GaussFiltering.class, true);
+            ij.command().run(CellCountingWorkflow.class, true);
         }
     }
 
