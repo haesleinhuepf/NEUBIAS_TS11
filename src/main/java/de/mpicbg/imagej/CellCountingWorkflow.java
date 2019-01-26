@@ -71,21 +71,32 @@ public class CellCountingWorkflow<T extends RealType<T>> implements Command {
         RandomAccessibleInterval otsuThresholedRai = ij.op().convert().int32(otsuThresholed);
         ImgLabeling cca = ij.op().labeling().cca(otsuThresholedRai, ConnectedComponents.StructuringElement.FOUR_CONNECTED);
 
+        // get a list of regions
         LabelRegions<IntegerType> regions = new LabelRegions(cca);
 
+        // determine number of cells
         int numberOfObjects = regions.getExistingLabels().size();
         System.out.print("Object found: " + numberOfObjects);
 
+        // go through opbjects and measure intensity
         int count = 0;
         for (LabelRegion region : regions) {
-
-
+            // get all pixels of the original image in the given region
             IterableInterval sample = Regions.sample(region, image);
+
+            // measure mean intensity
             RealType mean = ij.op().stats().mean(sample);
 
+            // output measurements
             System.out.println("Region " + count);
             System.out.println(" size " + region.size());
             System.out.println(" mean intensity" + mean.getRealFloat());
+
+
+
+
+
+
 
             count ++;
         }
