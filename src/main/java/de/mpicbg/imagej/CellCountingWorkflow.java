@@ -14,8 +14,13 @@ import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.algorithm.labeling.ConnectedComponents;
 import net.imglib2.img.Img;
+import net.imglib2.roi.labeling.ImgLabeling;
+import net.imglib2.roi.labeling.LabelRegion;
+import net.imglib2.roi.labeling.LabelRegions;
 import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.IntegerType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 import org.scijava.command.Command;
@@ -55,6 +60,19 @@ public class CellCountingWorkflow<T extends RealType<T>> implements Command {
 
         // show result
         ij.ui().show(otsuThresholed);
+
+        // connected components labelling for differentiating objects
+        // aka Particle Analyser
+
+        RandomAccessibleInterval otsuThresholedRai = ij.op().convert().int32(otsuThresholed);
+        ImgLabeling cca = ij.op().labeling().cca(otsuThresholedRai, ConnectedComponents.StructuringElement.FOUR_CONNECTED);
+
+        LabelRegions<IntegerType> regions = new LabelRegions(cca);
+
+        int numberOfObjects = regions.getExistingLabels().size();
+        System.out.print("Object found: " + numberOfObjects);
+
+
 
 
     }
