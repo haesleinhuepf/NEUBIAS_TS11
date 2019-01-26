@@ -32,6 +32,10 @@ import net.imglib2.view.Views;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.table.DefaultGenericTable;
+import org.scijava.table.FloatColumn;
+import org.scijava.table.IntColumn;
+import org.scijava.table.Table;
 
 import java.io.File;
 import java.util.Random;
@@ -78,6 +82,10 @@ public class CellCountingWorkflow<T extends RealType<T>> implements Command {
         Img<ARGBType> result = ArrayImgs.argbs(new long[]{image.dimension(0), image.dimension(1)});
         Random random = new Random();
 
+        // measure the size of the labels and write them in a table
+        IntColumn indexColumn = new IntColumn();
+        FloatColumn areaColumn = new FloatColumn();
+        FloatColumn averageColumn = new FloatColumn();
 
         // get a list of regions
         LabelRegions<IntegerType> regions = new LabelRegions(cca);
@@ -99,6 +107,9 @@ public class CellCountingWorkflow<T extends RealType<T>> implements Command {
             System.out.println("Region " + count);
             System.out.println(" size " + region.size());
             System.out.println(" mean intensity" + mean.getRealFloat());
+            indexColumn.add(count);
+            areaColumn.add((float) region.size());
+            averageColumn.add(mean.getRealFloat());
 
             ARGBType colour = new ARGBType(random.nextInt());
 
@@ -111,9 +122,18 @@ public class CellCountingWorkflow<T extends RealType<T>> implements Command {
             count ++;
         }
 
-
+        // show resulting object separation as image
         BdvFunctions.show(result, "Labelling");
 
+        // show results as table
+        Table table = new DefaultGenericTable();
+        table.add(indexColumn);
+        table.add(areaColumn);
+        table.add(averageColumn);
+        table.setColumnHeader(0, "Index");
+        table.setColumnHeader(1, "Area in pixels");
+        table.setColumnHeader(2, "Mean intensity");
+        ij.ui().show(table);
     }
 
     private void invertBinaryImage(IterableInterval image) {
