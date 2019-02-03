@@ -1,3 +1,8 @@
+In this repository, you find step-by-step instructions on how to build up personalized template for your ImageJ2/Fiji plugins. Furthermore, you learn how to build up a workflow for image segmentation / labelling / measurements. Just go through the git branches to see how code evolves.
+
+
+---
+
 This is an example Maven project implementing an ImageJ command.
 
 It is intended as an ideal starting point to develop new ImageJ commands
