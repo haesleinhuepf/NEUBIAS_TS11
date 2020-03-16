@@ -8,6 +8,9 @@
 
 package de.mpicbg.imagej;
 
+import ij.IJ;
+import ij.ImagePlus;
+import ij.gui.GenericDialog;
 import net.imagej.Dataset;
 import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
@@ -19,6 +22,9 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.UIService;
 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,16 +32,60 @@ import java.util.List;
 /**
  *
  */
-@Plugin(type = Command.class, menuPath = "Plugins>Gauss Filtering")
+@Plugin(type = Command.class, menuPath = "Plugins>Generic Dialog example")
 public class CellCountingWorkflow<T extends RealType<T>> implements Command {
 
-    @Parameter
-    private Dataset currentData;
+    private static int numericParameter = 2;
 
     @Override
     public void run() {
-        final Img<T> image = (Img<T>)currentData.getImgPlus();
-        
+        if (!showDialog()) {
+            return;
+        }
+
+        IJ.log("Performing something with " + numericParameter);
+
+        GenericDialog anotherSecondDialog = new GenericDialog("another dialog");
+        Panel panel = new Panel();
+        Button button = new Button();
+        button.setLabel("Button");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                IJ.log("Hello world again");
+                Checkbox checkbox = (Checkbox) anotherSecondDialog.getCheckboxes().get(0);
+                checkbox.setState(!checkbox.getState());
+            }
+        });
+        panel.add(button);
+
+        ImagePlus imp = IJ.getImage();
+        IJ.run("Gaussian Blur...");
+
+
+        IJ.log("Bye");
+    }
+
+    private boolean showDialog() {
+        GenericDialog gd = new GenericDialog("dialog");
+        Panel panel = new Panel();
+        Button button = new Button();
+        button.setLabel("Button");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                IJ.log("Hello world");
+            }
+        });
+        panel.add(button);
+        gd.addPanel(panel);
+        gd.addNumericField("number", numericParameter, 2);
+        gd.showDialog();
+        if (gd.wasCanceled() ) {
+            return false;
+        }
+        numericParameter = (int) gd.getNextNumber();
+        return true;
     }
 
     /**
